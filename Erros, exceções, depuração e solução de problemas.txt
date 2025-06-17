@@ -1,0 +1,193 @@
+Exercício 1:
+erro: Quando algo não saiu como esperado; 
+Exceção (em JavaScript): um tipo específico de erro que interrompe o fluxo normal do programa;
+Em linguagem natural, um "erro" refere-se a uma falha ou problema em geral, enquanto em JavaScript, uma "exceção" é um tipo específico de erro que pode ser tratado pelo código por meio de mecanismos como try-catch. 
+
+Exercício 2:
+function soma(a, b) {
+  return a + b;
+}
+console.log(soma(15, "dez")); //  "15dez" houve uma concatenação , sem exceção
+
+Exercício 3:
+Não devemos confiar 100% em dados vindos de fontes externas, por exemplo se deseja receber um número deve  verificar com typeof value === "number".
+
+Exercício 4:
+ReferenceError:ocorre ao tentar acessar uma variável ou função que não existe no escopo atual;
+TypeError:ocorre ao tentar usar um valor de tipo incompatível com uma determinada operação ou chamada de método;
+SyntaxError: ocorre durante a etapa de parsing (interpretação) do arquivo JS, se existe algum erro de sintaxe (parêntese/chave não fechados, vírgula extra, palavras reservadas mal usadas, etc).
+
+Exercício 5:
+function safeParse(jsonString) {
+  try {
+    return JSON.parse(jsonString);
+  } catch (err) {
+        return null;
+  }
+}
+console.log(safeParse('{"nome": "Desgraça ao se dispor"}')); //  { nome: "Desgraça ao seu dispor" }
+console.log(safeParse('texto inválido'));  //  null
+
+Exercício 6:
+function safeParse(jsonString) {
+  try {
+    return JSON.parse(jsonString);
+  } catch (err) {
+    if (err instanceof SyntaxError) {
+      return null;
+    }
+    throw err;
+  }
+}
+try {
+  console.log(safeParse('{"nome": "Luiza"}')); // { nome: "Luiza" }
+  console.log(safeParse('invalido'));         //  null
+    console.log(safeParse(undefined));  
+} catch (e) {
+  console.error("Erro relançado:", e);
+}
+
+Execício 7:
+function safeParse(jsonString) {
+  try {
+    return JSON.parse(jsonString);
+  } catch (err) {
+    if (err instanceof SyntaxError) {
+      return null;
+    }
+    throw err;
+  } finally {
+    // Esse código é executado sempre, tendo havido erro ou não
+    console.log("Parse attempt finished");
+  }
+}
+console.log(safeParse('{"cidade": "São Paulo"}'));
+console.log(safeParse('texto errado'));
+
+Exercício 8:
+class InvalidAgeError extends Error {
+  constructor(message) {
+    super(message);
+    this.name = "InvalidAgeError";
+  }
+}
+function checkAge(age) {
+  if (typeof age !== "number") {
+    throw new TypeError("A idade deve ser um número");
+  }
+if (age < 0 || age > 120) {
+    throw new InvalidAgeError("Idade fora do intervalo (0–120)");
+  }
+  return "Idade válida";
+}
+const idadesParaTestar = [-5, 30, 200, "vinte"];
+idadesParaTestar.forEach((idade) => {
+  try {
+    const resultado = checkAge(idade);
+    console.log(`checkAge(${idade}) →`, resultado);
+  } catch (err) {
+    if (err instanceof InvalidAgeError) {
+      console.error(`checkAge(${idade}) → InvalidAgeError: ${err.message}`);
+    } else if (err instanceof TypeError) {
+      console.error(`checkAge(${idade}) → TypeError: ${err.message}`);
+    } else {
+      console.error(`checkAge(${idade}) → Outro erro:`, err);
+    }
+  }
+});
+
+Exercício 9:
+unction soma(a, b) {
+  console.log("Valor de a recebido:", a);
+  console.log("Valor de b recebido:", b);
+  const resultado = a + b;
+  console.log("Resultado de a + b:", resultado);
+  return resultado;
+}
+console.log(soma(2, undefined));
+const retorno = soma(2, undefined);
+console.log("Valor retornado:", retorno);
+
+Quando o b é undefined, a operação 2 + undefined resulta em NaN e em JS qualquer operação aritmética com undefined gera NaN, e não uma exceção.
+
+
+Exercício 10:
+Abra o navegador;
+ Pressione:
+    - Windows/Linux: `Ctrl + Shift + I` ou `F12`.
+    - macOS: `Cmd + Option + I`;
+Aguarde a janela/painel das Ferramentas de Desenvolvedor aparecer;
+Clique na aba “Sources” ;
+Navegue até o arquivo JavaScript que deseja debugar;
+Clique na linha de código onde deseja pausar (ou aperte F8 para continuar).
+
+Exercício 11:
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Teste Debugger</title>
+  <script>
+    function testeDebug(x) {
+      const y = x * 2;
+      debugger;
+      return y;
+    }
+ };
+  </script>
+</head>
+<body>
+  <h1>Teste de Debugger</h1>
+</body>
+</html>
+
+O DevTools imediatamente pausou a execução quando encontrou debugger;. Na aba “Sources”, mostramos o escopo local com x = 5 e y = 10, permitindo avançar linha a linha. Com “Play” (Continuar), o script prosseguiu normalmente, executando o return e exibindo no console o valor retorno de testeDebug(5).
+
+Exercício 12:
+function interno(m) {
+  const res = m * 3;
+  return res;
+}
+
+function externo(n) {
+  const resultadoInterno = interno(n);
+  const maisUm = resultadoInterno + 1;
+  return maisUm;
+}
+externo(4);
+
+Step Over: Se - pausar em `const resultadoInterno = interno(n);` dentro de `externo` e apertar Step Over (`F10`), o depurador:
+    - Invocará `interno(4)` inteiramente “por baixo dos panos”,
+    - Voltará para `externo` no próximo comando (`const maisUm = resultadoInterno + 1;`), sem entrar em `interno`.
+    - Útil quando sabemos que `interno` está funcionando e queremos apenas ver o fluxo em `externo`.
+
+Step Into: - Na mesma linha `const resultadoInterno = interno(n);`, ao apertar Step Into (`F11`), o depurador:
+    - Entrará dentro da definição de `interno`,
+    - Pausará na primeira linha de `interno` (ou seja, em `const res = m * 3;`), com `m = 4`.
+    - Útil quando queremos investigar a implementação interna de alguma função específica.
+
+Step Out: - Se estivermos dentro de `interno` (após usar Step Into) e quisermos voltar rapidamente para `externo`, usamos Step Out (`Shift+F11`):
+    - O depurador executa o restante das linhas de `interno` (calculando `res = 12` e fazendo `return 12`),
+    - Pausa de novo assim que retornar para `externo`, na linha imediatamente posterior à chamada de `interno(n)` (ou seja, `const maisUm = resultadoInterno + 1;` com `resultadoInterno = 12`).
+   - Útil quando já vimos o que precisa em `interno` e queremos voltar para o contexto que chamou sem pausar em cada linha interna.
+
+Exercício 13:
+* externo(4)        ← chamada feita a partir do contexto global
+  * interno(4)      ← execução atual (topo da pilha)
+​
+O asterisco,  “* interno(4)” indica o topo da pilha (o ponto em que o programa está pausado/executando).
+“* externo(4)” mostra que externo foi quem chamou interno.
+
+Exercício 14:
+Abra DevTools;
+Vá à aba “Sources”;
+Navegue até o arquivo JS desejado;
+Clique no número da linha onde deseja pausar;
+Retomando a execução normalmente:
+No DevTools, basta clicar no botão ▶︎ (geralmente “Continue” ou “Resume script execution”);
+O código volta a rodar até:Encontrar outro breakpoint, se houver,Ou terminar normalmente, se não houver mais breakpoints ativos.
+Removendo todos os breakpoints de uma vez:
+Dentro da aba “Sources”:No painel lateral direito, existe uma seção chamada “Breakpoints”;
+Abaixo dela, há uma lista com todos os breakpoints definidos;
+Clica com o botão direito sobre qualquer breakpoint listado e escolher “Remove All Breakpoints”;
+Ou clicar no ícone de lixeira ou botão “⌦ Clear all breakpoints”.
